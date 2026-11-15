@@ -1,40 +1,20 @@
 # Bugs found & fixed
 
-> One section per bug. Order doesn't matter. Keep each one short and precise.
-> Commit the reproducing test **before** the fix.
+## BUG-1: Cart reconciliation was not implemented (QK-101)
 
----
-
-## BUG-1: <short title> (QK-101)
-
-- **Symptom:**
+- **Symptom:** Calling `CartReconciler.reconcile()` always threw `UnimplementedError`, preventing the cart from being checked against current server data.
 - **Steps to reproduce:**
-  1.
-  2.
-- **Root cause:** (file / function, 2–4 lines)
-- **Fix:**
-- **Test:** `test/...` → `test name`
-- **Commits:** test `<sha>` → fix `<sha>`
-
----
-
-## BUG-2: <short title> (QK-102)
-
-- **Symptom:**
-- **Steps to reproduce:**
-- **Root cause:**
-- **Fix:**
-- **Test:**
-- **Commits:**
-
----
-
-## BUG-3: …
-
-<!-- Copy the block above for every bug you find. -->
+  1. Create an empty cart.
+  2. Call `CartReconciler.reconcile(cart)`.
+  3. Observe the `UnimplementedError`.
+- **Root cause:** `lib/features/cart/application/cart_reconciler.dart`, `CartReconciler.reconcile()`, contained only a TODO and an `UnimplementedError`.
+- **Fix:** Implemented server-side product and coupon refresh, price and quantity reconciliation, removal of unavailable products and invalid coupons, and preservation of cart line order.
+- **Test:** `test/cart_reconciler_test.dart` → `empty cart returns unchanged without errors`
+- **Commits:** test `ece1b1a` → fix `d0c95d2`
+- **Additional coverage:** `d4719b7` adds tests for price changes, stock conflicts, unavailable products, and coupon handling.
 
 ---
 
 ## Suspicious but NOT a bug
 
-<!-- Optional: things you investigated and concluded are correct, and why. -->
+- Flutter analyzer reports 13 informational deprecation notices for `package:flutter/material.dart`. These are framework migration notices, not test failures or errors introduced by the cart reconciliation change.
